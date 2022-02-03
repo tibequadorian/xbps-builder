@@ -1,0 +1,20 @@
+#!/bin/sh
+
+distdir="$HOME/void-packages"
+
+cd "$distdir" || exit
+
+# update source repository
+git pull upstream master
+
+# update masterdir
+if [ ! -d masterdir ] ; then
+	./xbps-src binary-bootstrap
+else
+	./xbps-src bootstrap-update
+fi
+
+# check for outdated packages and update them
+for f in $(xbps-checkvers -f '%n' -iR "$distdir/hostdir/binpkgs" -D "$distdir"); do
+	./xbps-src pkg "$f"
+done
