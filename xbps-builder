@@ -1,21 +1,31 @@
-#!/bin/sh
+#!/bin/bash
 
-# source packages file
-. ./packages
-
-distdir="$(xdistdir)"
+# read configuration
+if [ ! -f conf ]; then
+	echo "No configuration found." >/dev/stderr
+	exit
+fi
+source ./conf
 
 cd "$distdir" || exit
 
 # update source repository
 git pull upstream master
 
-# update masterdir
-if [ ! -d masterdir ] ; then
-	./xbps-src binary-bootstrap
-else
-	./xbps-src bootstrap-update
-fi
+declare -A bootstrap_used
+for arch in $archs; do
+	bootstrap_used[${bootstrap[$arch]}]=1
+done
+
+# update masterdirs
+for bootstrap_arch in "${!bootstrap_used[@]}"; do
+	_masterdir=${masterdir[$bootstrap_arch]}
+	if [ ! -d $_masterdir ]; then
+		./xbps-src -m $_masterdir binary-bootstrap $bootstrap_arch
+	else
+		./xbps-src -m $_masterdir bootstrap-update
+	fi
+done
 
 repos="--repository=$distdir/hostdir/binpkgs
        --repository=$distdir/hostdir/binpkgs/nonfree
@@ -24,4 +34,13 @@ repos="--repository=$distdir/hostdir/binpkgs
        --repository=$distdir/hostdir/binpkgs/debug"
 
 # update packages
-xbulk $(xbps-checkvers -f '%n' -i $repos -D "$distdir" -m $pkgs)
+for arch in $archs; do
+	bootstrap_arch=${bootstrap[$arch]}
+	opts="-m ${masterdir[$bootstrap_arch]}"
+	if [[ "$arch" != "$bootstrap_arch" ]]; then
+		opts+=" -a $arch"
+	fi
+	for pkg in $(XBPS_TARGET_ARCH=$arch xbps-checkvers -f '%n' -i $repos -D "$distdir" -m $packages); do
+		./xbps-src $opts pkg $pkg
+	done
+done
