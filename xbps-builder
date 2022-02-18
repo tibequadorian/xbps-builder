@@ -1,6 +1,9 @@
 #!/bin/sh
 
-distdir="$HOME/void-packages"
+# source packages file
+. ./packages
+
+distdir="$(xdistdir)"
 
 cd "$distdir" || exit
 
@@ -14,7 +17,11 @@ else
 	./xbps-src bootstrap-update
 fi
 
-# check for outdated packages and update them
-for f in $(xbps-checkvers -f '%n' -iR "$distdir/hostdir/binpkgs" -D "$distdir"); do
-	./xbps-src pkg "$f"
-done
+repos="--repository=$distdir/hostdir/binpkgs
+       --repository=$distdir/hostdir/binpkgs/nonfree
+       --repository=$distdir/hostdir/binpkgs/multilib
+       --repository=$distdir/hostdir/binpkgs/multilib/nonfree
+       --repository=$distdir/hostdir/binpkgs/debug"
+
+# update packages
+xbulk $(xbps-checkvers -f '%n' -i $repos -D "$distdir" -m $pkgs)
