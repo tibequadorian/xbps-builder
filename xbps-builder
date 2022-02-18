@@ -9,6 +9,15 @@ if [ ! -f conf ]; then
 fi
 source ./conf
 
+# get full path of privkey
+if [ ! -z "$privkey" ]; then
+	privkey=$(realpath "$privkey")
+	if [ ! -f "$privkey" ]; then
+		echo "Signing key doesn't exist, creating one..."
+		openssl genrsa -out "$privkey" 4096
+	fi
+fi
+
 # update distdir
 cd "$distdir" || exit
 update_distdir || exit
@@ -54,3 +63,15 @@ for arch in $archs; do
 		./xbps-src -m "${masterdir[$bootstrap_arch]}" $opts pkg $pkg
 	done
 done
+
+# sign repositories and packages
+if [ ! -z "$privkey" ]; then
+	for repo in ${repos[@]}; do
+		if [ -d $repo ]; then
+			xbps-rindex --sign --signedby "$signedby" --privkey "$privkey" $repo
+			xbps-rindex --sign-pkg --privkey "$privkey" $repo/*.xbps
+		fi
+	done
+else
+	echo "Private key not set, skip signing repositories."
+fi
