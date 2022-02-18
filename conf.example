@@ -41,8 +41,8 @@ declare -A bootstrap=(
 # If a masterdir for BOOTSTRAP_ARCH is required, the builder expects it to be
 # at MASTERDIR. If it doesn't exists, it will be created.
 declare -A masterdir=(
-	[x86_64]="masterdir-x86_64"
-	[i686]="masterdir-i686"
+	[x86_64]="masterdir"
+	[i686]="masterdir-x86"
 	[x86_64-musl]="masterdir-x86_64-musl"
 )
 
