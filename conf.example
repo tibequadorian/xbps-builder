@@ -2,39 +2,46 @@
 #
 # Example configuration file
 # 
-# Copy this file to ./conf and edit it to your liking.
+# Copy this file to ./conf and modify it to your liking.
+
+
+# Directory which contains the void-packages repository.
+distdir="$HOME/void-packages"
+
+# Updates the void-packages repository.
+# If exit code is nonzero it will cause xbps-builder to exit immediately.
+update_distdir() {
+	git pull || exit
+}
+
+# List of packages to build if they're outdated.
+packages="discord msttcorefonts"
+
+# List of architectures which packages should be built for.
+archs="x86_64 i686"
 
 # [ARCH]=BOOTSTRAP_ARCH
 #
-# A package compiled for ARCH will use a masterdir bootstrapped for BOOTSTRAP_ARCH.
+# Packages built for ARCH will use a masterdir bootstrapped for BOOTSTRAP_ARCH.
 # These are the defaults used by the official void builders.
 declare -A bootstrap=(
-        [x86_64]=x86_64
-        [i686]=i686
-        [aarch64]=x86_64
-        [armv7l]=x86_64
-        [armv6l]=x86_64
-        [x86_64-musl]=x86_64-musl
-        [aarch64-musl]=x86_64-musl
-        [armv7l-musl]=x86_64-musl
-        [armv6l-musl]=x86_64-musl
+	[x86_64]=x86_64
+	[i686]=i686
+	[aarch64]=x86_64
+	[armv7l]=x86_64
+	[armv6l]=x86_64
+	[x86_64-musl]=x86_64-musl
+	[aarch64-musl]=x86_64-musl
+	[armv7l-musl]=x86_64-musl
+	[armv6l-musl]=x86_64-musl
 )
 
 # [BOOTSTRAP_ARCH]=MASTERDIR
 #
 # If a masterdir for BOOTSTRAP_ARCH is required, the builder expects it to be
-# named MASTERDIR. If it doesn't exists, it will be created.
+# at MASTERDIR. If it doesn't exists, it will be created.
 declare -A masterdir=(
-        [x86_64]="masterdir"
-        [i686]="masterdir-x86"
-        [x86_64-musl]="masterdir-x86_64-musl"
+	[x86_64]="masterdir-x86_64"
+	[i686]="masterdir-i686"
+	[x86_64-musl]="masterdir-x86_64-musl"
 )
-
-# Place of void-packages
-distdir="$HOME/void-packages"
-
-# List of architectures which packages should be built for.
-archs="x86_64 i686"
-
-# List of packages which should be built if they're outdated.
-packages="discord"
