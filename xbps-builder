@@ -59,8 +59,8 @@ for arch in $archs; do
 	if [[ "$arch" != "$bootstrap_arch" ]]; then
 		cross_opt="-a $arch"
 	fi
-	for pkg in $(XBPS_TARGET_ARCH=$arch xbps-checkvers -f '%n' -i $repos_opt -m $packages); do
-		./xbps-src -m "${masterdir[$bootstrap_arch]}" $opts pkg $pkg
+	for pkg in $(XBPS_TARGET_ARCH=$arch xbps-checkvers -f '%n' -i $repos_opt -D "$distdir" -m $packages); do
+		./xbps-src -m "${masterdir[$bootstrap_arch]}" $cross_opt pkg $pkg
 	done
 done
 
