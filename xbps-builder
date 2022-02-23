@@ -30,11 +30,8 @@ done
 # update masterdirs
 for bootstrap_arch in "${!bootstrap_used[@]}"; do
 	_masterdir=${masterdir[$bootstrap_arch]}
-	if [ ! -d $_masterdir ]; then
-		./xbps-src -m $_masterdir binary-bootstrap $bootstrap_arch
-	else
-		./xbps-src -m $_masterdir bootstrap-update
-	fi
+	./xbps-src -m $_masterdir binary-bootstrap $bootstrap_arch
+	./xbps-src -m $_masterdir bootstrap-update
 done
 
 # add repositories
@@ -55,12 +52,12 @@ done
 # update packages
 for arch in $archs; do
 	bootstrap_arch=${bootstrap[$arch]}
-	cross_opt=""
+	arch_opt="-m ${masterdir[$bootstrap_arch]}"
 	if [[ "$arch" != "$bootstrap_arch" ]]; then
-		cross_opt="-a $arch"
+		arch_opt+=" -a $arch"
 	fi
 	for pkg in $(XBPS_TARGET_ARCH=$arch xbps-checkvers -f '%n' -i $repos_opt -D "$distdir" -m $packages); do
-		./xbps-src show-avail $pkg -a $arch && ./xbps-src -m "${masterdir[$bootstrap_arch]}" $cross_opt pkg $pkg
+		./xbps-src show-avail $pkg $arch_opt && ./xbps-src pkg $pkg $arch_opt
 	done
 done
 
