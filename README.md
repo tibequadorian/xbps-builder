@@ -7,10 +7,6 @@ Use this script to create a repository of selected packages and automatically
 update them when they're outdated. This is useful for restricted packages which
 are not contained in the offical repository.
 
-Unlike xbps-mini-builder, it uses `xbps-checkvers(1)` to check for outdated
-packages in your local repository. Additionally it can build packages for
-multiple architectures which is not supported by xbps-mini-builder.
-
 ## Instructions
 
 Copy the `conf.example` file to `conf` and modify it to your liking.
