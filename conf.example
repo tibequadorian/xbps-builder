@@ -45,11 +45,3 @@ declare -A masterdir=(
 	[i686]="masterdir-x86"
 	[x86_64-musl]="masterdir-x86_64-musl"
 )
-
-# Private key used to sign repositories.
-# If unset, repositories won't be be signed.
-# If it doesn't exist, it will be generated.
-privkey="privkey.pem"
-
-# Name of the signature used to sign repositories.
-signedby="XBPS-builder"
